@@ -95,6 +95,51 @@ Dokumen ini mencatat riwayat semua permintaan pengguna (user requests), keputusa
   - Dioptimalkan padding dan celah tombol di mobile (`gap-1.5 sm:gap-2 px-1.5 sm:px-3 text-[11px] sm:text-xs`).
   - Diuji dengan `npm run build` dan berhasil 100% tanpa error.
 
+### 13. Integrasi Endpoint Login API (`POST https://portal.stmik-time.ac.id/rest/api/login`)
+- **Permintaan**: Menghubungkan formulir login frontend dengan endpoint login kampus `https://portal.stmik-time.ac.id/rest/api/login` (POST).
+- **Hasil/Perubahan**:
+  - Dibuat route handler proxy di `src/app/api/login/route.ts` untuk meneruskan request ke server kampus dan mencegah issue CORS pada browser.
+  - Dibuat service autentikasi di `src/services/auth.service.ts`.
+  - Dibuat custom mutation hook TanStack Query di `src/hooks/useAuthMutation.ts` yang mengelola siklus request, integrasi toast notifikasi Sonner, dan penyimpanan session/token ke Zustand (`useAuthStore`).
+  - Dihubungkan ke form di `src/app/page.tsx` dengan validasi input, status loading spinner, dan disabled button untuk mencegah submit ganda.
+  - Diuji dengan `npm run build` dan berhasil 100% tanpa error.
+
+### 14. Perbaikan Payload Login DTO (`dto.LoginDto`)
+- **Permintaan**: Mengatasi pesan error server `Unrecognized field "role" (class dto.LoginDto), not marked as ignorable` saat mencoba login dengan akun `admin` / `admin123`.
+- **Hasil/Perubahan**:
+  - Dihapus pengiriman field `role` pada `src/app/api/login/route.ts`, `src/services/auth.service.ts`, dan `src/app/page.tsx` sehingga request body yang dikirim ke server kampus murni hanya `{ username, password }`.
+  - Diuji dengan `npm run build` dan berhasil 100% tanpa error.
+
+### 15. Pengalihan Halaman (Redirect) ke /dashboard Saat Login Berhasil
+- **Permintaan**: Mengarahkan pengguna ke halaman bertuliskan "Login Berhasil" ketika login sukses.
+- **Hasil/Perubahan**:
+  - Dibuat halaman tujuan di `src/app/dashboard/page.tsx` dengan pesan "Login Berhasil", kartu informasi user yang login, dan tombol logout/kembali.
+  - Ditambahkan `router.push('/dashboard')` pada callback `onSuccess` di `src/hooks/useAuthMutation.ts`.
+  - Diuji dengan `npm run build` dan berhasil 100% tanpa error.
+### 16. Penghapusan Pemilihan Hak Akses (Role Selector) pada Halaman Login
+- **Permintaan**: Menghilangkan pilihan hak akses (Mahasiswa, Dosen, Admin) pada halaman login.
+- **Hasil/Perubahan**:
+  - Dihapus elemen UI selector role (label "Pilih Hak Akses (Role)" dan tombol Mahasiswa, Dosen, Admin) di `src/app/page.tsx`.
+  - Dibersihkan state `activeRole`, tipe `RoleType`, serta unused imports icon (`GraduationCap`, `UserCheck`).
+  - Layout form menjadi lebih ringkas dan langsung fokus ke input Nama Pengguna & Kata Sandi Akun.
+  - Diuji dengan `npm run build` dan berhasil 100% tanpa error.
+
+### 17. Integrasi Resmi Google reCAPTCHA v2 (Client & Server-Side Verification)
+- **Permintaan**: Memasang Google reCAPTCHA v2 resmi menggunakan Site Key dan Secret Key yang disediakan pengguna.
+- **Hasil/Perubahan**:
+  - Dibuat file `.env.local` untuk menyimpan `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` dan `RECAPTCHA_SECRET_KEY`.
+  - Dibuat komponen React 19 native `src/components/shared/recaptcha-v2.tsx` dengan dukungan `onVerify`, `onExpire`, `onError`, dan reset ref imperatif.
+  - Diperbarui `src/app/page.tsx` menggantikan mockup box lama dengan widget resmi Google reCAPTCHA v2, validasi token sebelum submit form login, dan otomatis reset saat gagal login.
+  - Diperbarui `src/services/auth.service.ts` untuk menyertakan `captchaToken?: string` pada payload login.
+  - Diperbarui `src/app/api/login/route.ts` untuk memverifikasi token ke API Google (`https://www.google.com/recaptcha/api/siteverify`) di server-side sebelum meneruskan payload login `{ username, password }` ke server kampus.
+### 18. Perbaikan Sinkronisasi Token reCAPTCHA v2 (Dual-Fallback & Stable Callback Refs)
+- **Permintaan**: Mengatasi issue tombol login yang masih meminta penyelesaian captcha meskipun widget reCAPTCHA sudah bercentang hijau.
+- **Hasil/Perubahan**:
+  - Diperbarui `src/components/shared/recaptcha-v2.tsx`: callback `onVerify`, `onExpire`, dan `onError` disimpan dalam `useRef` stabil agar tidak terputus saat formulir re-render karena ketikan user.
+  - Ditambahkan method imperatif `getResponse(): string` pada `RecaptchaV2Ref` untuk membaca nilai token aktif langsung dari instance `window.grecaptcha`.
+  - Diperbarui `src/app/page.tsx`: mekanisme submit login kini menggunakan dual-fallback (`captchaToken || recaptchaRef.current?.getResponse()`), menjamin token terbaca 100% jika checkbox sudah centang hijau.
+  - Diuji dengan `npm run build` dan berhasil 100% tanpa error.
+
 ---
 
 ## 📐 Arsitektur & Aturan Utama Terpasang

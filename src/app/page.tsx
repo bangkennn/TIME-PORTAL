@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { StmikTimeLogo, StmikWatermark } from '@/components/shared/logo-stmik-time';
+import { RecaptchaV2, RecaptchaV2Ref } from '@/components/shared/recaptcha-v2';
+import { useLoginMutation } from '@/hooks/useAuthMutation';
+import { toast } from 'sonner';
 import {
-  GraduationCap,
-  UserCheck,
   Shield,
   User,
   Lock,
@@ -14,18 +15,55 @@ import {
   CheckCircle2,
   Info,
   ArrowRight,
-  RotateCw,
+  Loader2,
 } from 'lucide-react';
 
-type RoleType = 'mahasiswa' | 'dosen' | 'admin';
-
 export default function LoginPage() {
-  const [activeRole, setActiveRole] = useState<RoleType>('mahasiswa');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [isCaptchaChecked, setIsCaptchaChecked] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const recaptchaRef = useRef<RecaptchaV2Ref>(null);
+
+  const loginMutation = useLoginMutation();
+
+  const handleSubmitLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!username.trim()) {
+      toast.error('Data Belum Lengkap', {
+        description: 'Silakan masukkan Nama Pengguna Anda.',
+      });
+      return;
+    }
+    if (!password.trim()) {
+      toast.error('Data Belum Lengkap', {
+        description: 'Silakan masukkan Kata Sandi Anda.',
+      });
+      return;
+    }
+    const tokenToSubmit = captchaToken || recaptchaRef.current?.getResponse() || null;
+    if (!tokenToSubmit) {
+      toast.error('Verifikasi Diperlukan', {
+        description: 'Harap selesaikan verifikasi reCAPTCHA terlebih dahulu.',
+      });
+      return;
+    }
+
+    loginMutation.mutate(
+      {
+        username: username.trim(),
+        password: password.trim(),
+        captchaToken: tokenToSubmit,
+      },
+      {
+        onError: () => {
+          setCaptchaToken(null);
+          recaptchaRef.current?.reset();
+        },
+      }
+    );
+  };
 
   return (
     <main className="min-h-screen bg-[#F0F4F9] flex flex-col justify-between p-4 sm:p-6 md:p-10 font-sans">
@@ -117,58 +155,9 @@ export default function LoginPage() {
                 </p>
               </div>
 
-              {/* Role Selector (Mahasiswa, Dosen, Admin) */}
-              <div className="space-y-2">
-                <label className="hidden lg:block text-xs font-semibold text-slate-700">
-                  Pilih Hak Akses (Role)
-                </label>
-                <div className="grid grid-cols-3 gap-1.5 sm:gap-3 p-1 bg-slate-50/80 rounded-2xl border border-slate-200/60">
-                  {/* Mahasiswa */}
-                  <button
-                    type="button"
-                    onClick={() => setActiveRole('mahasiswa')}
-                    className={`flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-1.5 sm:px-3 rounded-xl text-[11px] sm:text-xs font-semibold transition-all duration-150 cursor-pointer ${
-                      activeRole === 'mahasiswa'
-                        ? 'bg-[#E8F0FE] text-[#0D3B82] border border-blue-300/80 shadow-xs'
-                        : 'bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-200/40 border border-transparent'
-                    }`}
-                  >
-                    <GraduationCap className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                    <span>Mahasiswa</span>
-                  </button>
-
-                  {/* Dosen */}
-                  <button
-                    type="button"
-                    onClick={() => setActiveRole('dosen')}
-                    className={`flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-1.5 sm:px-3 rounded-xl text-[11px] sm:text-xs font-semibold transition-all duration-150 cursor-pointer ${
-                      activeRole === 'dosen'
-                        ? 'bg-[#E8F0FE] text-[#0D3B82] border border-blue-300/80 shadow-xs'
-                        : 'bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-200/40 border border-transparent'
-                    }`}
-                  >
-                    <UserCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                    <span>Dosen</span>
-                  </button>
-
-                  {/* Admin */}
-                  <button
-                    type="button"
-                    onClick={() => setActiveRole('admin')}
-                    className={`flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-1.5 sm:px-3 rounded-xl text-[11px] sm:text-xs font-semibold transition-all duration-150 cursor-pointer ${
-                      activeRole === 'admin'
-                        ? 'bg-[#E8F0FE] text-[#0D3B82] border border-blue-300/80 shadow-xs'
-                        : 'bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-200/40 border border-transparent'
-                    }`}
-                  >
-                    <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                    <span>Admin</span>
-                  </button>
-                </div>
-              </div>
 
               {/* Form Fields */}
-              <form onSubmit={(e) => e.preventDefault()} className="space-y-4 pt-1">
+              <form onSubmit={handleSubmitLogin} className="space-y-4 pt-1">
                 {/* Nama Pengguna Field */}
                 <div className="space-y-1.5">
                   <label className="block text-xs font-semibold text-slate-700">
@@ -214,40 +203,21 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                {/* Verifikasi Keamanan (reCAPTCHA) */}
+                {/* Verifikasi Keamanan (Google reCAPTCHA v2) */}
                 <div className="space-y-1.5 pt-1">
                   <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
                     <Shield className="w-3.5 h-3.5 text-[#0D3B82]" />
                     <span>Verifikasi Keamanan</span>
                   </div>
                   
-                  {/* Clean reCAPTCHA Box */}
-                  <div className="bg-[#FAFAFA] border border-slate-300/80 rounded-md p-3 sm:w-72 flex items-center justify-between shadow-2xs select-none">
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={isCaptchaChecked}
-                        onChange={(e) => setIsCaptchaChecked(e.target.checked)}
-                        className="w-6 h-6 rounded border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
-                      />
-                      <span className="text-xs font-medium text-slate-700">
-                        I&apos;m not a robot
-                      </span>
-                    </label>
-
-                    <div className="flex flex-col items-center justify-center pl-2">
-                      <div className="w-7 h-7 relative flex items-center justify-center">
-                        <RotateCw className="w-5 h-5 text-blue-500 animate-spin-slow" />
-                      </div>
-                      <span className="text-[8px] font-bold text-slate-400 tracking-tight leading-none mt-0.5">
-                        reCAPTCHA
-                      </span>
-                      <div className="flex gap-1 text-[7px] text-slate-400 leading-none mt-0.5">
-                        <span className="hover:underline cursor-pointer">Privacy</span>
-                        <span>-</span>
-                        <span className="hover:underline cursor-pointer">Terms</span>
-                      </div>
-                    </div>
+                  {/* Google reCAPTCHA v2 Widget */}
+                  <div className="pt-0.5">
+                    <RecaptchaV2
+                      ref={recaptchaRef}
+                      onVerify={(token) => setCaptchaToken(token)}
+                      onExpire={() => setCaptchaToken(null)}
+                      onError={() => setCaptchaToken(null)}
+                    />
                   </div>
                 </div>
 
@@ -277,10 +247,20 @@ export default function LoginPage() {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="w-full bg-[#0D3B82] hover:bg-[#0A2E66] active:scale-[0.99] text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 text-sm transition-all shadow-sm cursor-pointer mt-5"
+                  disabled={loginMutation.isPending}
+                  className="w-full bg-[#0D3B82] hover:bg-[#0A2E66] active:scale-[0.99] text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 text-sm transition-all shadow-sm cursor-pointer mt-5 disabled:opacity-75 disabled:cursor-not-allowed"
                 >
-                  <span>Masuk ke Portal</span>
-                  <ArrowRight className="w-4 h-4" />
+                  {loginMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Sedang Memproses...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Masuk ke Portal</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
                 </button>
               </form>
 
