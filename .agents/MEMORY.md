@@ -138,6 +138,57 @@ Dokumen ini mencatat riwayat semua permintaan pengguna (user requests), keputusa
   - Diperbarui `src/components/shared/recaptcha-v2.tsx`: callback `onVerify`, `onExpire`, dan `onError` disimpan dalam `useRef` stabil agar tidak terputus saat formulir re-render karena ketikan user.
   - Ditambahkan method imperatif `getResponse(): string` pada `RecaptchaV2Ref` untuk membaca nilai token aktif langsung dari instance `window.grecaptcha`.
   - Diperbarui `src/app/page.tsx`: mekanisme submit login kini menggunakan dual-fallback (`captchaToken || recaptchaRef.current?.getResponse()`), menjamin token terbaca 100% jika checkbox sudah centang hijau.
+### 19. Implementasi Tampilan Dashboard Admin 1:1 Pixel-Perfect (Murni Frontend)
+- **Permintaan**: Mendesain antarmuka `/dashboard` sama persis dengan gambar referensi yang dikirimkan (sidebar hingga isi konten), murni frontend tanpa terhubung data backend dan tanpa penambahan item di luar gambar.
+- **Hasil/Perubahan**:
+  - Diperbarui `src/app/dashboard/page.tsx`:
+    - **Sidebar Biru Royal (`#1E56F9`)**: Brand header (Avatar `TM` + `STMIK TIME` `Sistem Informasi`), navigasi menu (`Home` aktif dengan pill putih, `Data Master`, `Kelola Data`, `Studi Mahasiswa`, `Pengumuman`), dan tombol `Log Out` di bagian bawah.
+    - **Top Header**: Judul `Dashboard`, salam `Selamat datang, admin`, search bar pill `Cari mahasiswa...`, lonceng notifikasi dengan red badge, profil toska `AD admin`, dan tombol `Logout`.
+    - **4 Kartu Metrik Ringkasan**: `830 Total mahasiswa`, `828 Aktif`, `101 Alumni`, dan `86 Nonaktif` dengan icon badge yang sesuai.
+    - **Grafik Baris Tengah**: Donut Chart SVG `Mahasiswa berdasarkan prodi` (61% TI vs 39% SI dengan center text `830 mahasiswa`) dan Area Spline Chart SVG `Mahasiswa berdasarkan angkatan` (kurva halus biru dengan sumbu X `null`, `2000`, `2020` - `2026`).
+    - **Grafik Baris Bawah**: Clustered Column/Bar Chart SVG lebar `Mahasiswa berdasarkan status per angkatan` dengan 5 kategori warna (`AKTIF`, `NONAKTIF`, `DROPOUT`, `ALUMNI`, `CUTI`).
+  - Murni frontend sesuai instruksi tanpa penambahan elemen tambahan di luar referensi.
+### 20. Penyesuaian Layout Sidebar Flush Edge & Seamless Active Cut-out Tab
+- **Permintaan**: Menghilangkan jarak putih di sekeliling sidebar agar menempel ke sisi kiri, atas, dan bawah layar; serta membuat menu yang aktif menyatu secara seamless dengan background halaman dashboard.
+- **Hasil/Perubahan**:
+  - Diperbarui `src/app/dashboard/page.tsx`:
+    - Dihapus padding luar container sehingga sidebar `aside` menempel penuh (*flush*) ke tepi kiri, atas, dan bawah layar (`min-h-screen`, `top-0`, `left-0`).
+    - Tab menu aktif (`Home`) didesain memanjang hingga batas kanan sidebar dengan background yang sama dengan area konten dashboard (`bg-[#F4F6FB]`).
+    - Diterapkan efek lengkungan sudut alami (*inverted concave curve radius*) di bagian atas dan bawah tab aktif, menghasilkan efek cut-out tab yang menyatu sempurna dengan area dashboard.
+    - Menu tidak aktif diberi margin kanan proporsional (`pr-5`) dan area konten diberi padding lega (`p-5 sm:p-7`) dengan layout responsif.
+### 21. Penyesuaian Warna Biru Dongker (#0D3B82), Logo Resmi, dan Tombol Logout Merah Pastel Soft
+- **Permintaan**: Menyelaraskan warna sidebar dan aksen ke warna biru gelap/dongker sesuai halaman login (`#0D3B82`), memasang file logo resmi `Logo.png`, serta mengubah warna tombol logout menjadi merah pastel soft.
+- **Hasil/Perubahan**:
+  - Diperbarui `src/app/dashboard/page.tsx`:
+    - Warna sidebar dan inverted curve diganti ke warna biru dongker resmi STMIK TIME `#0D3B82`.
+    - Avatar teks `TM` diganti dengan logo lambang resmi kampus `public/img/Logo.png` menggunakan komponen `StmikLogoOnly`.
+    - Tombol `Logout` di header atas diubah menjadi merah pastel soft (`bg-[#FEE2E2] text-[#DC2626] hover:bg-[#FECACA] border-red-200/80`).
+    - Tombol `Log Out` di sidebar bawah diubah menjadi pil merah pastel transparan lembut (`bg-[#DC2626]/15 text-[#FECACA] hover:bg-[#DC2626]/25 border-red-300/20`).
+    - Warna aksen grafik Donut TI, Spline area curve, dan bar chart AKTIF diselaraskan ke `#0D3B82`.
+### 22. Implementasi Tampilan Responsif Mobile & Drawer Sidebar Non-Full
+- **Permintaan**: Menyesuaikan tampilan dashboard agar responsif di HP dengan tombol hamburger yang memunculkan sidebar non-full saat ditekan.
+- **Hasil/Perubahan**:
+  - Diperbarui `src/app/dashboard/page.tsx`:
+    - Pada layar mobile (`lg:hidden`): sidebar disembunyikan secara default dan konten dashboard tampil penuh (*full width*) tanpa terhimpit.
+    - Ditambahkan tombol **Hamburger Menu** di samping judul `Dashboard` pada header mobile.
+    - Saat hamburger diklik, sidebar meluncur (*slide-in drawer*) non-full (`w-64`) dari kiri dengan backdrop gelap semi-transparan (`bg-black/50`).
+    - Ditambahkan tombol silang (`X`) di header sidebar mobile serta kemampuan menutup dengan mengetuk area backdrop.
+    - Header atas dioptimalkan secara responsif (penataan pencarian, notifikasi, profil, dan logout).
+    - Pada layar desktop (`lg`): sidebar tetap tampil statis di sisi kiri secara permanen.
+### 23. Pembersihan Tombol Logout Header & Penyelarasan Ikon Notifikasi Mobile
+- **Permintaan**: Menghapus tombol logout pada dashboard sehingga hanya tersisa 1 tombol logout di sidebar, serta mengatur ikon notifikasi di sebelah kiri profil pada tampilan mobile.
+- **Hasil/Perubahan**:
+  - Diperbarui `src/app/dashboard/page.tsx`:
+    - Dihapus tombol Logout pada header atas (baik pada tampilan mobile maupun desktop).
+    - Akses Logout kini terpusat tunggal pada tombol `Log Out` di bagian bawah panel sidebar.
+    - Pada tampilan mobile (`sm:hidden`), ikon notifikasi lonceng (`Bell`) ditempatkan tepat di samping kiri avatar profil pengguna `AD` (`[Lonceng] [Avatar AD]`).
+    - Pada tampilan desktop/tablet, penataan kontrol header tetap seimbang (`Search Bar` ➔ `Lonceng Notifikasi` ➔ `Profil AD admin`).
+### 24. Penyesuaian Teks Brand Header Sidebar Menjadi STMIK TIME Saja
+- **Permintaan**: Mengubah teks pada brand header sidebar samping logo dari "STMIK TIME SISTEM INFORMASI" menjadi "STMIK TIME" saja.
+- **Hasil/Perubahan**:
+  - Diperbarui `src/app/dashboard/page.tsx`:
+    - Dihapus subteks "Sistem Informasi" di samping logo sidebar.
+    - Teks judul utama disesuaikan menjadi "STMIK TIME" tunggal yang proporsional dan bersih di sebelah logo lambang `StmikLogoOnly`.
   - Diuji dengan `npm run build` dan berhasil 100% tanpa error.
 
 ---
