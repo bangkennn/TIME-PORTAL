@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
 import { StmikLogoOnly } from '@/components/shared/logo-stmik-time';
@@ -26,6 +27,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const { clearAuth } = useAuthStore();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isAlumniOpen, setIsAlumniOpen] = useState(false);
 
   const handleLogout = () => {
     clearAuth();
@@ -51,7 +53,7 @@ export default function DashboardPage() {
       >
         <div>
           {/* Brand Header with Logo.png & Close Button for Mobile */}
-          <div className="px-5 pt-6 pb-6">
+          <div className="px-5 pt-7 pb-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="shrink-0 flex items-center justify-center">
@@ -76,36 +78,36 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Navigation Menus with Seamless Active Cut-out */}
-          <nav className="pl-5 space-y-1">
-            {/* Home (Active - Seamless Cut-out Tab) */}
+          {/* Navigation Menus with Spacious Vertical Spacing */}
+          <nav className="pl-5 space-y-4 pt-1">
+            {/* Home (Active - Tebal & Lebar Atas-Bawah) */}
             <div className="relative">
               {/* Inverted Concave Curve Top */}
-              <div className="absolute -top-5 right-0 w-5 h-5 bg-[#F4F6FB] pointer-events-none">
-                <div className="w-full h-full bg-[#0D3B82] rounded-br-[20px]" />
+              <div className="absolute -top-7 right-0 w-7 h-7 bg-[#F4F6FB] pointer-events-none">
+                <div className="w-full h-full bg-[#0D3B82] rounded-br-[28px]" />
               </div>
 
-              {/* Active Tab Body */}
+              {/* Active Tab Body (Tinggi & Tebal Vertikal) */}
               <button
                 type="button"
                 onClick={() => setIsMobileOpen(false)}
-                className="w-full bg-[#F4F6FB] text-[#0D3B82] font-bold text-xs py-3 pl-4 rounded-l-2xl flex items-center gap-3 cursor-pointer text-left transition-all relative z-10"
+                className="w-full bg-[#F4F6FB] text-[#0D3B82] font-bold text-xs sm:text-sm py-5 pl-5 rounded-l-2xl flex items-center gap-3.5 cursor-pointer text-left transition-all relative z-10 shadow-xs"
               >
                 <Home className="w-4 h-4 text-[#0D3B82] shrink-0" />
                 <span>Home</span>
               </button>
 
               {/* Inverted Concave Curve Bottom */}
-              <div className="absolute -bottom-5 right-0 w-5 h-5 bg-[#F4F6FB] pointer-events-none">
-                <div className="w-full h-full bg-[#0D3B82] rounded-tr-[20px]" />
+              <div className="absolute -bottom-7 right-0 w-7 h-7 bg-[#F4F6FB] pointer-events-none">
+                <div className="w-full h-full bg-[#0D3B82] rounded-tr-[28px]" />
               </div>
             </div>
 
             {/* Inactive Menu: Data Master */}
-            <div className="pr-5 pt-1">
+            <div className="pr-5">
               <button
                 type="button"
-                className="w-full text-white/90 hover:bg-white/10 text-xs font-medium py-2.5 px-3.5 rounded-xl flex items-center justify-between cursor-pointer text-left transition-colors"
+                className="w-full text-white/90 hover:bg-white/10 text-xs sm:text-[13px] font-medium py-3.5 px-3.5 rounded-xl flex items-center justify-between cursor-pointer text-left transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <Database className="w-4 h-4 text-white/90 shrink-0" />
@@ -119,7 +121,7 @@ export default function DashboardPage() {
             <div className="pr-5">
               <button
                 type="button"
-                className="w-full text-white/90 hover:bg-white/10 text-xs font-medium py-2.5 px-3.5 rounded-xl flex items-center justify-between cursor-pointer text-left transition-colors"
+                className="w-full text-white/90 hover:bg-white/10 text-xs sm:text-[13px] font-medium py-3.5 px-3.5 rounded-xl flex items-center justify-between cursor-pointer text-left transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <Users className="w-4 h-4 text-white/90 shrink-0" />
@@ -133,7 +135,7 @@ export default function DashboardPage() {
             <div className="pr-5">
               <button
                 type="button"
-                className="w-full text-white/90 hover:bg-white/10 text-xs font-medium py-2.5 px-3.5 rounded-xl flex items-center justify-between cursor-pointer text-left transition-colors"
+                className="w-full text-white/90 hover:bg-white/10 text-xs sm:text-[13px] font-medium py-3.5 px-3.5 rounded-xl flex items-center justify-between cursor-pointer text-left transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <FileText className="w-4 h-4 text-white/90 shrink-0" />
@@ -143,11 +145,54 @@ export default function DashboardPage() {
               </button>
             </div>
 
+            {/* Menu Kategori: Alumni (Dropdown/Collapsible) */}
+            <div className="pr-5">
+              <button
+                type="button"
+                onClick={() => setIsAlumniOpen((prev) => !prev)}
+                className={`w-full text-white/90 hover:bg-white/10 text-xs sm:text-[13px] font-medium py-3.5 px-3.5 rounded-xl flex items-center justify-between cursor-pointer text-left transition-colors ${
+                  isAlumniOpen ? 'bg-white/10' : ''
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <GraduationCap className="w-4 h-4 text-white/90 shrink-0" />
+                  <span>Alumni</span>
+                </div>
+                <ChevronRight
+                  className={`w-3.5 h-3.5 opacity-60 shrink-0 transition-transform duration-200 ${
+                    isAlumniOpen ? 'rotate-90' : ''
+                  }`}
+                />
+              </button>
+
+              {/* Submenu Alumni */}
+              {isAlumniOpen && (
+                <div className="mt-2 ml-4 pl-3 border-l-2 border-white/20 space-y-1.5 py-1">
+                  <Link
+                    href="/alumni/tracer-study"
+                    onClick={() => setIsMobileOpen(false)}
+                    className="w-full text-white/90 hover:text-white hover:bg-white/15 text-xs font-medium py-2 px-3 rounded-lg flex items-center gap-2.5 cursor-pointer transition-colors"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-300 shrink-0" />
+                    <span>Tracer Study</span>
+                  </Link>
+
+                  <button
+                    type="button"
+                    className="w-full text-white/70 hover:text-white hover:bg-white/10 text-xs py-2 px-3 rounded-lg flex items-center gap-2.5 cursor-pointer transition-colors text-left"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-white/40 shrink-0" />
+                    <span>Data Alumni</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* Inactive Menu: Pengumuman */}
             <div className="pr-5">
               <button
                 type="button"
-                className="w-full text-white/90 hover:bg-white/10 text-xs font-medium py-2.5 px-3.5 rounded-xl flex items-center gap-3 cursor-pointer text-left transition-colors"
+                className="w-full text-white/90 hover:bg-white/10 text-xs sm:text-[13px] font-medium py-3.5 px-3.5 rounded-xl flex items-center gap-3 cursor-pointer text-left transition-colors"
               >
                 <Megaphone className="w-4 h-4 text-white/90 shrink-0" />
                 <span>Pengumuman</span>
@@ -161,7 +206,7 @@ export default function DashboardPage() {
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full bg-[#DC2626]/15 hover:bg-[#DC2626]/25 border border-red-300/20 text-[#FECACA] text-xs font-medium py-2.5 px-3.5 rounded-xl flex items-center gap-2.5 transition-colors cursor-pointer text-left shadow-2xs"
+            className="w-full bg-[#DC2626]/15 hover:bg-[#DC2626]/25 border border-red-300/20 text-[#FECACA] text-xs font-medium py-3 px-3.5 rounded-xl flex items-center gap-2.5 transition-colors cursor-pointer text-left shadow-2xs"
           >
             <LogOut className="w-4 h-4 shrink-0" />
             <span>Log Out</span>

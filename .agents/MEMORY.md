@@ -189,7 +189,52 @@ Dokumen ini mencatat riwayat semua permintaan pengguna (user requests), keputusa
   - Diperbarui `src/app/dashboard/page.tsx`:
     - Dihapus subteks "Sistem Informasi" di samping logo sidebar.
     - Teks judul utama disesuaikan menjadi "STMIK TIME" tunggal yang proporsional dan bersih di sebelah logo lambang `StmikLogoOnly`.
-  - Diuji dengan `npm run build` dan berhasil 100% tanpa error.
+### 25. Penjarangan Menu Navigasi & Perluasan Area Tab Aktif Home di Sidebar
+- **Permintaan**: Menjarangkan jarak antar menu di sidebar (desktop dan mobile) agar tidak terlalu rapat, serta memperluas area blok warna putih pada menu yang sedang dipilih.
+- **Hasil/Perubahan**:
+  - Diperbarui `src/app/dashboard/page.tsx`:
+    - Lebar sidebar di desktop diselaraskan menjadi `w-64` (256px) untuk kenyamanan tata letak.
+    - Spacing vertikal navigasi diperlebar dari `space-y-1` menjadi `space-y-2.5` sehingga menu tidak lagi terasa sesak/menumpuk rapat.
+    - Tab menu aktif `Home` diperluas: padding ditambah menjadi `py-3.5 pl-5`, dan sudut kurva lengkungan *inverted cut-out* diperbesar menjadi `w-6 h-6` (24px).
+    - Tombol menu lainnya dan footer logout diselaraskan dengan padding yang lebih nyaman (`py-3 px-4`).
+### 26. Perluasan Signifikan Lebar Sidebar (w-72) & Tab Aktif Home (Inverted Cut-Out 32px)
+- **Permintaan**: Memperlebar dimensi sidebar dan tab aktif putih karena dinilai masih kurang lebar.
+- **Hasil/Perubahan**:
+  - Diperbarui `src/app/dashboard/page.tsx`:
+    - Lebar total sidebar diperluas dari `w-64` (256px) menjadi `w-72` (288px) baik pada desktop maupun mobile drawer.
+    - Tab menu aktif `Home` dipertebal dan diperluas: padding menjadi `py-4 pl-6 text-sm gap-4` dengan kurva *inverted concave* ekstra lebar `w-8 h-8` (radius `rounded-br-[32px]` dan `rounded-tr-[32px]`).
+    - Menu tidak aktif dan footer logout diperlebar dengan padding `py-3.5 px-4 pr-7` dan icon/font seimbang (`text-sm`).
+    - Header brand diberi padding lega `px-7 pt-8 pb-8` dengan icon logo `h-11 w-11`.
+### 27. Penyesuaian Dimensi Vertikal Navigasi (space-y-4) & Penebalan Vertikal Tab Aktif Home (py-5)
+- **Permintaan**: Klarifikasi bahwa maksud "lebar" adalah jarak vertikal (atas–bawah) agar menu tidak dempet/berhimpitan, serta blok menu yang terpilih (`Home`) memiliki tinggi vertikal yang lebih tebal dan leluasa.
+- **Hasil/Perubahan**:
+  - Diperbarui `src/app/dashboard/page.tsx`:
+    - Lebar horizontal sidebar dikembalikan ke dimensi ideal dan ramping (`w-64 lg:w-60`).
+    - Jarak vertikal antar menu diperlebar secara signifikan dari `space-y-2` menjadi `space-y-4` sehingga tidak berhimpitan.
+    - Tab aktif `Home` dipertebal secara vertikal dengan padding `py-5 pl-5` (tinggi ~64px), memberikan blok putih yang tebal dan leluasa.
+    - Kurva sudut *inverted concave* diselaraskan secara presisi ke `w-7 h-7` (radius 28px) di atas dan bawah tab aktif.
+    - Menu tidak aktif diberi padding vertikal `py-3.5 px-3.5` untuk proporsi sentuhan yang nyaman.
+    - Padding header atas sidebar disesuaikan menjadi `px-5 pt-7 pb-6` dan area logout menjadi `p-5 pb-6`.
+### 28. Penambahan Menu Kategori Alumni di Sidebar & Rute Halaman /alumni/tracer-study
+- **Permintaan**: Menambahkan 1 menu kategori di sidebar bernama "Alumni" yang terdiri dari beberapa menu di mana salah satunya adalah "Tracer Study". Saat menu Tracer Study ditekan, navigasi berpindah ke halaman `/alumni/tracer-study`.
+- **Hasil/Perubahan**:
+  - Diperbarui `src/app/dashboard/page.tsx`:
+    - Ditambahkan import `Link` dari `next/link` dan state `isAlumniOpen`.
+    - Ditambahkan kategori menu **Alumni** di sidebar dengan ikon `GraduationCap` dan chevron dropdown toggle yang interaktif.
+    - Menampilkan submenu **Tracer Study** (dengan link ke `/alumni/tracer-study`) dan **Data Alumni** ketika kategori terbuka.
+  - Dibuat halaman baru `src/app/alumni/tracer-study/page.tsx`:
+    - Layout lengkap terintegrasi dengan tema kampus `#0D3B82`, header, notifikasi, dan avatar profil.
+    - Sidebar konsisten dengan submenu `Tracer Study` dalam keadaan aktif/terpilih dan link `Home` yang mengarah kembali ke `/dashboard`.
+    - 4 KPI Stat Cards: Responden Alumni (1.248), Relevansi Bidang IT (78.5%), Rata-Rata Waktu Tunggu (2.1 Bulan), Tingkat Keterserapan (92.3%).
+    - Filter dinamis berdasarkan Tahun Kelulusan dan Program Studi, search filter, tombol export, serta tabel interaktif kuesioner responden alumni dan diagram distribusi status alumni.
+### 29. Pengosongan Konten Halaman Tracer Study (/alumni/tracer-study)
+- **Permintaan**: Mengosongkan halaman Tracer Study terlebih dahulu tanpa ada kartu/card ataupun komponen data dummy apapun.
+- **Hasil/Perubahan**:
+  - Diperbarui `src/app/alumni/tracer-study/page.tsx`:
+    - Dihapus 4 KPI Stat Cards, bilah filter, tabel responden kuesioner, dan diagram status alumni.
+    - Struktur layout utama (sidebar responsif, header judul, breadcrumb `Dashboard / Alumni / Tracer Study`, notifikasi, dan profil pengguna) dipertahankan utuh dan tetap berfungsi.
+    - Area konten body disiapkan dalam keadaan bersih/kosong (*empty canvas*) siap diisi sesuai kebutuhan mendatang.
+  - Diuji dengan `npm run build` dan berhasil 100% tanpa error (Exit code 0).
 
 ---
 
@@ -197,3 +242,6 @@ Dokumen ini mencatat riwayat semua permintaan pengguna (user requests), keputusa
 1. **App Router Structure**: Semua komponen berada di `src/app/`, `src/components/`, `src/store/`, `src/lib/`, `src/hooks/`, `src/services/`, `src/validators/`.
 2. **Strict TypeScript & RSC**: Gunakan Server Components secara default, `'use client'` hanya jika diperlukan interactivity/hooks.
 3. **Persetujuan Sebelum Eksekusi**: Setiap perubahan kode baru **wajib** melalui tahap konfirmasi/approval dengan menyajikan maksud, gambaran *before/after*, perubahan detail, dan hasil yang diharapkan.
+
+
+
