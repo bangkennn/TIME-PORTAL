@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 export interface User {
   id: string;
@@ -16,20 +17,37 @@ interface AuthState {
   clearAuth: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  token: null,
-  isAuthenticated: false,
-  setAuth: (user, token) =>
-    set({
-      user,
-      token,
-      isAuthenticated: true,
-    }),
-  clearAuth: () =>
-    set({
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
       user: null,
       token: null,
       isAuthenticated: false,
+      setAuth: (user, token) =>
+        set({
+          user,
+          token,
+          isAuthenticated: true,
+        }),
+      clearAuth: () =>
+        set({
+          user: null,
+          token: null,
+          isAuthenticated: false,
+        }),
     }),
-}));
+    {
+      name: 'stmik-auth-storage',
+      storage: createJSONStorage(() => {
+        if (typeof window !== 'undefined') {
+          return localStorage;
+        }
+        return {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {},
+        };
+      }),
+    }
+  )
+);

@@ -5,9 +5,11 @@ const TARGET_API_URL = 'https://portal.stmik-time.ac.id/rest/api/login';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { username, password, captchaToken } = body;
+    const { username, password } = body;
 
-    // Verifikasi reCAPTCHA v2 dengan Google API
+    // Catatan: Verifikasi reCAPTCHA dinonaktifkan sementara untuk pengujian LAN / Development
+    /*
+    const { captchaToken } = body;
     const secretKey = process.env.RECAPTCHA_SECRET_KEY;
     if (secretKey) {
       if (!captchaToken) {
@@ -54,6 +56,7 @@ export async function POST(req: NextRequest) {
         );
       }
     }
+    */
 
     // Strictly send only username and password to match backend dto.LoginDto
     const payload = {

@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { StmikTimeLogo, StmikWatermark } from '@/components/shared/logo-stmik-time';
-import { RecaptchaV2, RecaptchaV2Ref } from '@/components/shared/recaptcha-v2';
+// import { RecaptchaV2, RecaptchaV2Ref } from '@/components/shared/recaptcha-v2';
 import { useLoginMutation } from '@/hooks/useAuthMutation';
 import { toast } from 'sonner';
 import {
-  Shield,
   User,
   Lock,
   Eye,
@@ -21,10 +20,8 @@ import {
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const recaptchaRef = useRef<RecaptchaV2Ref>(null);
 
   const loginMutation = useLoginMutation();
 
@@ -42,27 +39,11 @@ export default function LoginPage() {
       });
       return;
     }
-    const tokenToSubmit = captchaToken || recaptchaRef.current?.getResponse() || null;
-    if (!tokenToSubmit) {
-      toast.error('Verifikasi Diperlukan', {
-        description: 'Harap selesaikan verifikasi reCAPTCHA terlebih dahulu.',
-      });
-      return;
-    }
 
-    loginMutation.mutate(
-      {
-        username: username.trim(),
-        password: password.trim(),
-        captchaToken: tokenToSubmit,
-      },
-      {
-        onError: () => {
-          setCaptchaToken(null);
-          recaptchaRef.current?.reset();
-        },
-      }
-    );
+    loginMutation.mutate({
+      username: username.trim(),
+      password: password.trim(),
+    });
   };
 
   return (
@@ -157,7 +138,7 @@ export default function LoginPage() {
 
 
               {/* Form Fields */}
-              <form onSubmit={handleSubmitLogin} className="space-y-4 pt-1">
+              <form onSubmit={handleSubmitLogin} action="#" className="space-y-4 pt-1">
                 {/* Nama Pengguna Field */}
                 <div className="space-y-1.5">
                   <label className="block text-xs font-semibold text-slate-700">
@@ -203,23 +184,10 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                {/* Verifikasi Keamanan (Google reCAPTCHA v2) */}
-                <div className="space-y-1.5 pt-1">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
-                    <Shield className="w-3.5 h-3.5 text-[#0D3B82]" />
-                    <span>Verifikasi Keamanan</span>
-                  </div>
-                  
-                  {/* Google reCAPTCHA v2 Widget */}
-                  <div className="pt-0.5">
-                    <RecaptchaV2
-                      ref={recaptchaRef}
-                      onVerify={(token) => setCaptchaToken(token)}
-                      onExpire={() => setCaptchaToken(null)}
-                      onError={() => setCaptchaToken(null)}
-                    />
-                  </div>
-                </div>
+                {/* 
+                  Verifikasi Keamanan (Google reCAPTCHA v2)
+                  Sementara dinonaktifkan untuk mempermudah akses pengujian melalui jaringan LAN / IP lokal
+                */}
 
                 {/* Remember Me & Forgot Password */}
                 <div className="flex items-center justify-between pt-1 text-xs">

@@ -1,0 +1,36 @@
+export interface MahasiswaDetail {
+  idPendaftaran?: number | null;
+  idUser?: number | null;
+  idAgama?: string | null;
+  kodeKampus?: string | null;
+  kodeProgramStudi?: string | null;
+  idSekolah?: number | null;
+  idStatus?: number | null;
+  idWaktuKuliah?: number | null;
+  email?: string | null;
+  tanggalPendaftaran?: string | number | null;
+  namaMahasiswa: string;
+  tempatLahir?: string | null;
+  tanggalLahir?: number | string | null;
+  alamatMahasiswa?: string | null;
+  jenisKelamin?: string | null;
+  alamatOrangtua?: string | null;
+  anakKe?: number | null;
+  golonganDarah?: string | null;
+  hobi?: string | null;
+  jumlahSaudara?: number | null;
+  jurusan?: string | null;
+  keterangan?: string | null;
+  kewarganegaraan?: string | null;
+  namaAyah?: string | null;
+  namaIbu?: string | null;
+  noIjazah?: string | null;
+  noTeleponMahasiswa?: string | null;
+  noTeleponOrangtua?: string | null;
+  pekerjaanOrangtua?: string | null;
+  tahunAngkatan?: number | null;
+  tahunLulus?: number | null;
+  tanggalIjazah?: string | number | null;
+  pendidikanOrangtua?: string | null;
+  [key: string]: unknown;
+}
